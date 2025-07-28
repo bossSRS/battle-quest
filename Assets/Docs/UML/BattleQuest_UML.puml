@@ -1,0 +1,99 @@
+@startuml BattleQuestUML
+
+' ENUMS
+enum MatchState {
+  WaitingToStart
+  InProgress
+  Finished
+}
+
+' BASE MANAGER
+abstract class BaseManager {
+  +Init()
+  +ResetManager()
+}
+
+' CORE
+class GameManager {
+  -teams: List<TeamData>
+  -matchState: MatchState
+  +StartGame()
+  +EndGame()
+  +CheckWinCondition()
+}
+
+GameManager -|> BaseManager
+
+' TEAMS
+class TeamData {
+  +teamID: int
+  +teamName: string
+  +teamColor: Color
+  +score: int
+  +players: List<PlayerController>
+}
+
+class TeamManager {
+  -teams: List<TeamData>
+  +GetTeam(int): TeamData
+  +AssignPlayerToTeam(PlayerController)
+}
+
+TeamManager -|> BaseManager
+
+' PLAYERS
+class PlayerController {
+  +teamID: int
+  +Move()
+  +Shoot()
+  +Die()
+}
+
+class PlayerHealth {
+  -lives: int
+  +TakeDamage()
+  +Revive()
+  +IsAlive(): bool
+}
+
+class PlayerTeam {
+  +teamID: int
+  +SetTeamColor()
+}
+
+PlayerController --> PlayerHealth
+PlayerController --> PlayerTeam
+
+' ZONES
+class ZoneController {
+  +zoneID: int
+  +ownerTeamID: int
+  +captureProgress: float
+  +UpdateCapture()
+}
+
+class ZoneCaptureLogic {
+  +UpdateZoneControl()
+  +AwardPoints()
+}
+
+ZoneController --> ZoneCaptureLogic
+
+' AI
+class BotController {
+  +targetZone: ZoneController
+  +targetEnemy: PlayerController
+  +Act()
+}
+
+BotController -up-> PlayerController
+
+' SCORING
+class ScoreSystem {
+  +AddPoints(TeamData, int)
+  +GetTeamScore(int): int
+}
+
+ScoreSystem -up-> GameManager
+
+@enduml
