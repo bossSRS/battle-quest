@@ -1,19 +1,21 @@
 // Title       : PlayerController.cs
 // Author      : Sadikur Rahman
-// Description : Handles player-specific logic such as input and movement.
+// Description : Core player class that connects components and sets team.
 
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerMovement))]
+[RequireComponent(typeof(PlayerZoneInteractor))]
 public class PlayerController : BaseCharacterController
 {
+    private void Awake()
+    {
+        gameObject.name = $"Player_{team?.teamName}";
+    }
+
     public override void SetTeam(TeamData newTeam)
     {
         base.SetTeam(newTeam);
-        Debug.Log($"Player assigned to team: {newTeam.teamName}");
-    }
-
-    private void Update()
-    {
-        // TODO: Add movement and shooting logic here
+        gameObject.name = $"Player_{newTeam.teamName}";
     }
 }
